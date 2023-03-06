@@ -1,7 +1,9 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -71,10 +73,25 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
     /**
+     * hilt
+     */
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    /**
      * test
      */
+    testImplementation(libs.hilt.android.test)
     testImplementation(libs.junit)
+    kaptTest(libs.hilt.compiler)
+
     androidTestImplementation(libs.androidx.compose.ui.test.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.hilt.android.test)
+    kaptAndroidTest(libs.hilt.compiler)
+}
+
+kapt {
+    correctErrorTypes = true
 }
