@@ -1,0 +1,55 @@
+[versions]
+# config
+compileSdk = "33"
+minSdk = "24"
+targetSdk = "33"
+versionCode = "1"
+versionName = "1.0"
+jvmTarget = "11"
+
+# [plugins]
+androidGradlePlugin = "7.4.2"
+kotlinGradlePlugin = "1.8.10"
+
+# [libraries]
+# compose
+androidxActivityCompose = "1.6.1"
+androidxComposeBom = "2023.01.00"
+androidxComposeCompiler = "1.4.2"
+androidxComposeMaterial = "1.0.1"
+
+# android
+androidxCore = "1.9.0"
+androidxLifecycle = "2.5.1"
+
+# test
+androidxTestEspresso = "3.5.1"
+androidxTestExt = "1.1.5"
+junit = "4.13.2"
+
+[libraries]
+# compose bom
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidxComposeBom" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui" }
+androidx-compose-ui-test-junit = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+
+# compose
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityCompose" }
+androidx-compose-material = { module = "androidx.compose.material3:material3", version.ref = "androidxComposeMaterial" }
+
+# android
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
+
+# test
+androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidxTestEspresso" }
+androidx-test-ext-junit = { module = "androidx.test.ext:junit", version.ref = "androidxTestExt" }
+junit = { module = "junit:junit", version.ref = "junit" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinGradlePlugin" }
