@@ -14,3 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "maap"
 include(":app")
+include(":testing")

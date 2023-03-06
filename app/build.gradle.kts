@@ -17,7 +17,7 @@ android {
         versionCode = libs.versions.versionCode.get().toInt()
         versionName = libs.versions.versionName.get()
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.dev.maap.testing.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -57,8 +57,6 @@ dependencies {
     implementation(composeBom)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     /**
      * compose
@@ -81,15 +79,7 @@ dependencies {
     /**
      * test
      */
-    testImplementation(libs.hilt.android.test)
-    testImplementation(libs.junit)
-    kaptTest(libs.hilt.compiler)
-
-    androidTestImplementation(libs.androidx.compose.ui.test.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
-    androidTestImplementation(libs.hilt.android.test)
-    kaptAndroidTest(libs.hilt.compiler)
+    androidTestImplementation(project(":testing"))
 }
 
 kapt {
