@@ -51,6 +51,11 @@ android {
 
 dependencies {
     /**
+     * other modules
+     */
+    implementation(project(":database"))
+
+    /**
      * composeBom
      */
     val composeBom = platform(libs.androidx.compose.bom)
