@@ -22,6 +22,7 @@ dependencies {
      */
     implementation(project(":domain"))
     implementation(project(":model"))
+    implementation(project(":common"))
 
     /**
      * composeBom
