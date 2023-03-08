@@ -18,6 +18,12 @@ android {
 
 dependencies {
     /**
+     * other modules
+     */
+    implementation(project(":domain"))
+    implementation(project(":model"))
+
+    /**
      * composeBom
      */
     val composeBom = platform(libs.androidx.compose.bom)
@@ -35,6 +41,11 @@ dependencies {
     api(libs.hilt.android.test)
 
     /**
+     * datetime
+     */
+    implementation(libs.kotlinx.datetime)
+
+    /**
      * test libraries
      * (Use api instead of implementation.
      * Because when testing, to import test library dependencies from other modules.)
@@ -44,6 +55,8 @@ dependencies {
     api(libs.androidx.test.ext.junit)
     api(libs.androidx.test.runner)
     api(libs.junit)
+    api(libs.kotlin.coroutines.test)
     api(libs.kotlin.test)
     api(libs.room.testing)
+    api(libs.turbine)
 }

@@ -16,3 +16,5 @@ rootProject.name = "maap"
 include(":app")
 include(":testing")
 include(":database")
+include(":model")
+include(":domain")

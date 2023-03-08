@@ -7,7 +7,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dev.maap.database.MaapDatabase
 import com.dev.maap.database.di.DatabaseModule
 import com.dev.maap.database.model.LocationEntity
-import com.dev.maap.database.model.toPoint
+import com.dev.maap.model.Bounds
+import com.dev.maap.model.Point
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -47,7 +48,7 @@ class LocationDaoTest {
     fun test_insert_and_get_locations() = runTest {
         val location = LocationEntity(
             id = 1,
-            point = Pair(40.7128, -74.006).toPoint()
+            point = Point(40.7128, -74.006)
         )
 
         locationDao.insertLocation(location)
@@ -62,12 +63,21 @@ class LocationDaoTest {
     fun test_insert_and_get_locations_with_rtree_index() = runTest {
         val location = LocationEntity(
             id = 1,
-            point = Pair(40.7128, -74.006).toPoint()
+            point = Point(40.7128, -74.006)
+        )
+        val bounds = Bounds(
+            Point(40.7, -74.1),
+            Point(40.8, -73.9)
         )
 
         locationDao.insertLocationWithRtreeIndex(location)
 
-        val findLocations = locationDao.getLocationsInRange(40.7, 40.8, -74.1, -73.9)
+        val findLocations = locationDao.getLocationsInRange(
+            minLat = bounds.southWest.lat,
+            maxLat = bounds.northEast.lat,
+            minLng = bounds.southWest.lng,
+            maxLng = bounds.northEast.lng
+        )
 
         assertContains(findLocations, location)
     }

@@ -19,6 +19,12 @@ android {
 
 dependencies {
     /**
+     * other modules
+     */
+    implementation(project(":model"))
+    implementation(project(":domain"))
+
+    /**
      * sqlite (compile with rtree)
      */
     implementation(files("libs/sqlite-android-3410000.aar"))
