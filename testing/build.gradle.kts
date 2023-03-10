@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -23,6 +24,7 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":model"))
     implementation(project(":common"))
+    implementation(project(":database"))
 
     /**
      * composeBom
@@ -45,6 +47,13 @@ dependencies {
      * datetime
      */
     implementation(libs.kotlinx.datetime)
+
+    /**
+     * room
+     */
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 
     /**
      * test libraries

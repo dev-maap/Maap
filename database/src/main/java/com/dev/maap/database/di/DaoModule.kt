@@ -1,7 +1,7 @@
 package com.dev.maap.database.di
 
 import com.dev.maap.database.MaapDatabase
-import com.dev.maap.database.dao.LocationDao
+import com.dev.maap.database.dao.PictureDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 object DaoModule {
 
     @Provides
-    fun providesLocationDao(
+    fun providesPictureDao(
         database: MaapDatabase,
-    ): LocationDao = database.locationDao()
+    ): PictureDao = database.pictureDao()
 }

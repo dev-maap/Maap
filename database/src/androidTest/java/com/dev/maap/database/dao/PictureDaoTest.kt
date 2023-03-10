@@ -2,9 +2,14 @@ package com.dev.maap.database.dao
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dev.maap.database.MaapDatabase
-import com.dev.maap.database.entity.toLocation
 import com.dev.maap.model.Bounds
 import com.dev.maap.model.Point
+import com.dev.maap.testing.model.testPicture1
+import com.dev.maap.testing.model.testPicture2
+import com.dev.maap.testing.model.testPicture3
+import com.dev.maap.testing.model.testPicture4
+import com.dev.maap.testing.model.testPicture5
+import com.dev.maap.testing.model.testPictures
 import com.dev.maap.testing.rule.MainDispatcherRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -21,11 +26,12 @@ import java.io.IOException
 import javax.inject.Inject
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class LocationDaoTest {
+class PictureDaoTest {
     private val testScope = TestScope()
     private val testDispatcher = StandardTestDispatcher(testScope.testScheduler)
 
@@ -39,7 +45,7 @@ class LocationDaoTest {
     lateinit var db: MaapDatabase
 
     @Inject
-    lateinit var locationDao: LocationDao
+    lateinit var pictureDao: PictureDao
 
     @Before
     fun init() {
@@ -55,28 +61,29 @@ class LocationDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun test_insert_and_get_location() = runTest {
-        val point = Point(40.7128, -74.006)
-        val id = locationDao.insertLocation(point.toLocation())
-        val findLocation = locationDao.getLocation(id)
+    fun test_insert_and_get_picture() = runTest {
+        val id = pictureDao.insertPicture(testPicture1)
+        val findPicture = pictureDao.getPicture(id)
 
-        assertEquals(point, findLocation.point)
+        assertEquals(testPicture1, findPicture)
     }
 
     @Test
     @Throws(Exception::class)
-    fun test_insert_point_and_get_locations_with_bounds() = runTest {
-        val point = Point(40.7128, -74.006)
+    fun test_insert_pictures_and_get_pictures_with_bounds() = runTest {
         val bounds = Bounds(
             Point(40.7, -74.1),
             Point(40.8, -73.9)
         )
 
-        val id = locationDao.insertPoint(point)
-        val findLocation = locationDao.getLocation(id)
+        pictureDao.insertPictures(testPictures)
 
-        val locations = locationDao.getLocationsWithBounds(bounds)
+        val findPictures = pictureDao.getPicturesWithBounds(bounds)
 
-        assertContains(locations, findLocation)
+        assertContains(findPictures, testPicture1)
+        assertContains(findPictures, testPicture5)
+        assertFalse { findPictures.contains(testPicture2) }
+        assertFalse { findPictures.contains(testPicture3) }
+        assertFalse { findPictures.contains(testPicture4) }
     }
 }

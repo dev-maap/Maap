@@ -2,8 +2,9 @@ package com.dev.maap.database
 
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import javax.inject.Inject
 
-class MaapDatabaseHelper : RoomDatabase.Callback() {
+class MaapDatabaseHelper @Inject constructor() : RoomDatabase.Callback() {
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
         db.execSQL(CREATE_LOCATION_RTREE)

@@ -1,12 +1,13 @@
 package com.dev.maap.database.sqlite
 
 import androidx.sqlite.db.SupportSQLiteOpenHelper
+import javax.inject.Inject
 
 /**
  * Overridden FrameworkSQLiteOpenHelperFactory
  * using org.sqlite.database.sqlite instead of android.database.sqlite.
  */
-class HelperFactory : SupportSQLiteOpenHelper.Factory {
+class HelperFactory @Inject constructor(): SupportSQLiteOpenHelper.Factory {
     override fun create(
         configuration: SupportSQLiteOpenHelper.Configuration
     ): SupportSQLiteOpenHelper {

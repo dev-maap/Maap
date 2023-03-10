@@ -46,4 +46,5 @@ dependencies {
      * test
      */
     androidTestImplementation(project(":testing"))
+    kaptAndroidTest(libs.hilt.android.compiler)
 }
