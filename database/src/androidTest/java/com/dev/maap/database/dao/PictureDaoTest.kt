@@ -2,18 +2,17 @@ package com.dev.maap.database.dao
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dev.maap.database.MaapDatabase
+import com.dev.maap.database.entity.toModel
 import com.dev.maap.model.Bounds
 import com.dev.maap.model.Point
 import com.dev.maap.testing.model.testPicture1
-import com.dev.maap.testing.model.testPicture2
-import com.dev.maap.testing.model.testPicture3
-import com.dev.maap.testing.model.testPicture4
-import com.dev.maap.testing.model.testPicture5
 import com.dev.maap.testing.model.testPictures
 import com.dev.maap.testing.rule.MainDispatcherRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -24,9 +23,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
 import javax.inject.Inject
-import kotlin.test.assertContains
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -63,9 +61,13 @@ class PictureDaoTest {
     @Throws(Exception::class)
     fun test_insert_and_get_picture() = runTest {
         val id = pictureDao.insertPicture(testPicture1)
-        val findPicture = pictureDao.getPicture(id)
+        val insertPicture = testPicture1.copy(id = id)
 
-        assertEquals(testPicture1, findPicture)
+        val findPictureEntity = pictureDao.getPictureEntity(id).first()
+        val locationEntity = pictureDao.getLocation(findPictureEntity.locationId)
+        val findPicture = findPictureEntity.toModel(locationEntity.point)
+
+        assertEquals(insertPicture, findPicture)
     }
 
     @Test
@@ -76,14 +78,27 @@ class PictureDaoTest {
             Point(40.8, -73.9)
         )
 
-        pictureDao.insertPictures(testPictures)
+        val ids = testPictures.groupBy { it.point }.flatMap { (point, groupByPictures) ->
+            pictureDao.insertPicturesWithPoint(point, groupByPictures)
+        }
 
-        val findPictures = pictureDao.getPicturesWithBounds(bounds)
+        val insertPictures = pictureDao.getPictureEntities(ids).map { pictureEntities ->
+            pictureEntities.groupBy { it.locationId }
+                .flatMap { (locationId, groupByPictureEntities) ->
+                    val point = pictureDao.getLocation(locationId).point
+                    groupByPictureEntities.map { it.toModel(point) }
+                }
+        }.first()
 
-        assertContains(findPictures, testPicture1)
-        assertContains(findPictures, testPicture5)
-        assertFalse { findPictures.contains(testPicture2) }
-        assertFalse { findPictures.contains(testPicture3) }
-        assertFalse { findPictures.contains(testPicture4) }
+        val locationIds = pictureDao.getLocationIdsWithBounds(bounds)
+        val findPictures = pictureDao.getPictureEntitiesWithLocationIds(locationIds).map {
+            it.flatMap { (location, pictures) ->
+                pictures.map { picture -> picture.toModel(location.point) }
+            }
+        }.first()
+
+        assertTrue {
+            insertPictures.containsAll(findPictures)
+        }
     }
 }

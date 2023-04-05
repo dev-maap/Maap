@@ -12,6 +12,6 @@ class SearchPicturesUseCase @Inject constructor(
 ): BaseUseCase<Bounds, Flow<List<Picture>>>() {
 
     override fun execute(parameter: Bounds): Flow<List<Picture>> {
-        return pictureRepository.searchPicturesInRange(parameter)
+        return pictureRepository.searchPictures(parameter)
     }
 }

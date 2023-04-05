@@ -19,17 +19,17 @@ import com.dev.maap.model.Point
 sealed interface LocationDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertLocation(location: LocationEntity): Long
+    suspend fun insertLocation(location: LocationEntity): Long
 
     @Query(value = """
         INSERT OR IGNORE INTO locations_rtree (id, minLat, maxLat, minLng, maxLng)
         VALUES (:id, :lat, :lat, :lng, :lng)
     """)
     @SkipQueryVerification
-    fun insertLocationRtreeIndex(id: Long, lat: Double, lng: Double)
+    suspend fun insertLocationRtreeIndex(id: Long, lat: Double, lng: Double)
 
     @Transaction
-    fun insertLocationWithRtreeIndex(location: LocationEntity): Long {
+    suspend fun insertLocationWithRtreeIndex(location: LocationEntity): Long {
         val id = insertLocation(location)
         if(id != (-1).toLong()) {
             insertLocationRtreeIndex(id, location.point.lat, location.point.lng)
@@ -39,7 +39,7 @@ sealed interface LocationDao {
     }
 
     @Transaction
-    fun insertPoint(point: Point): Long {
+    suspend fun insertPoint(point: Point): Long {
         return insertLocationWithRtreeIndex(point.toLocation())
     }
 
@@ -48,7 +48,7 @@ sealed interface LocationDao {
         FROM locations
         WHERE id = :id
     """)
-    fun getLocation(id: Long): LocationEntity
+    suspend fun getLocation(id: Long): LocationEntity
 
     @Query(value = """
         SELECT * 
@@ -63,13 +63,40 @@ sealed interface LocationDao {
         )
     """)
     @SkipQueryVerification
-    fun getLocationsInRange(
+    suspend fun getLocationsInRange(
         minLat: Double, maxLat: Double, minLng: Double, maxLng: Double
     ): List<LocationEntity>
 
+    @Query(value = """
+        SELECT id 
+        FROM locations
+        WHERE id IN (
+            SELECT id 
+            FROM locations_rtree
+            WHERE minLat <= :maxLat
+            AND maxLat >= :minLat
+            AND minLng <= :maxLng
+            AND maxLng >= :minLng
+        )
+    """)
+    @SkipQueryVerification
+    suspend fun getLocationIdsInRange(
+        minLat: Double, maxLat: Double, minLng: Double, maxLng: Double
+    ): List<Long>
+
     @Transaction
-    fun getLocationsWithBounds(bounds: Bounds): List<LocationEntity> {
+    suspend fun getLocationsWithBounds(bounds: Bounds): List<LocationEntity> {
         return getLocationsInRange(
+            minLat = bounds.southWest.lat,
+            maxLat = bounds.northEast.lat,
+            minLng = bounds.southWest.lng,
+            maxLng = bounds.northEast.lng
+        )
+    }
+
+    @Transaction
+    suspend fun getLocationIdsWithBounds(bounds: Bounds): List<Long> {
+        return getLocationIdsInRange(
             minLat = bounds.southWest.lat,
             maxLat = bounds.northEast.lat,
             minLng = bounds.southWest.lng,

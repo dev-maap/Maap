@@ -6,7 +6,6 @@ import com.dev.maap.testing.model.testPictures
 import com.dev.maap.testing.repository.TestPictureRepository
 import com.dev.maap.testing.rule.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -26,6 +25,6 @@ class SavePicturesUseCaseTest {
     fun test_save_pictures() = runTest {
         val useCase = useCase(testPictures)
 
-        assertContains(useCase.first(), testPicture1)
+        assertContains(useCase, testPicture1.id)
     }
 }

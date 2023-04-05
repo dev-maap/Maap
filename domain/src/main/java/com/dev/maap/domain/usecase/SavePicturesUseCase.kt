@@ -1,16 +1,15 @@
 package com.dev.maap.domain.usecase
 
 import com.dev.maap.domain.repository.PictureRepository
-import com.dev.maap.domain.usecase.base.BaseUseCase
+import com.dev.maap.domain.usecase.base.SuspendUseCase
 import com.dev.maap.model.Picture
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class SavePicturesUseCase @Inject constructor(
     private val pictureRepository: PictureRepository
-): BaseUseCase<List<Picture>, Flow<List<Picture>>>() {
+): SuspendUseCase<List<Picture>, List<Long>>() {
 
-    override fun execute(parameter: List<Picture>): Flow<List<Picture>> {
+    override suspend fun execute(parameter: List<Picture>): List<Long> {
         return pictureRepository.savePictures(parameter)
     }
 }

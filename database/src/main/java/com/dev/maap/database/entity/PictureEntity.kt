@@ -51,6 +51,7 @@ fun Picture.toEntity(locationId: Long) = PictureEntity(
 )
 
 fun PictureEntity.toModel(point: Point) = Picture(
+    id = id,
     name = name,
     point = point,
     contentUri = contentUri,
