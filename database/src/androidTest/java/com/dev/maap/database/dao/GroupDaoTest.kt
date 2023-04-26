@@ -1,13 +1,13 @@
-package com.dev.maap.data.picture.datasource.local
+package com.dev.maap.database.dao
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dev.maap.database.MaapDatabase
-import com.dev.maap.testing.model.testPictures
+import com.dev.maap.database.entity.toModel
+import com.dev.maap.testing.model.testGroup1
 import com.dev.maap.testing.rule.MainDispatcherRule
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -23,7 +23,7 @@ import kotlin.test.assertEquals
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class PictureLocalDataSourceTest {
+class GroupDaoTest {
     private val testScope = TestScope()
     private val testDispatcher = StandardTestDispatcher(testScope.testScheduler)
 
@@ -37,7 +37,7 @@ class PictureLocalDataSourceTest {
     lateinit var db: MaapDatabase
 
     @Inject
-    lateinit var pictureLocalDataSource: PictureLocalDataSource
+    lateinit var groupDao: GroupDao
 
     @Before
     fun init() {
@@ -53,11 +53,10 @@ class PictureLocalDataSourceTest {
 
     @Test
     @Throws(Exception::class)
-    fun test_insert_and_get_pictures() = runTest {
-        val ids = pictureLocalDataSource.savePictures(testPictures).map { it.id }
+    fun test_insert_and_get_group() = runTest {
+        val insertGroup = groupDao.insertGroup(testGroup1)
+        val findGroup = groupDao.getGroupEntity(insertGroup.id).toModel()
 
-        val findPictures = pictureLocalDataSource.getPictures(ids).first()
-
-        assertEquals(findPictures, testPictures)
+        assertEquals(insertGroup, findGroup)
     }
 }

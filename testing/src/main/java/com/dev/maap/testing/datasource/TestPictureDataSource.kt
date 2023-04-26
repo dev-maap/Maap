@@ -13,14 +13,14 @@ class TestPictureDataSource : PictureLocalDataSource {
     private val pictureFlow: MutableSharedFlow<List<Picture>> =
         MutableSharedFlow(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
-    override suspend fun savePicture(picture: Picture): Long {
-        pictureFlow.tryEmit(listOf(picture))
-        return picture.id
+    override suspend fun savePicture(_picture: Picture): Picture {
+        pictureFlow.tryEmit(listOf(_picture))
+        return _picture
     }
 
-    override suspend fun savePictures(pictures: List<Picture>): List<Long> {
-        pictureFlow.tryEmit(pictures)
-        return pictures.map { it.id }
+    override suspend fun savePictures(_pictures: List<Picture>): List<Picture> {
+        pictureFlow.tryEmit(_pictures)
+        return _pictures
     }
 
     override fun getPicture(id: Long): Flow<Picture> {

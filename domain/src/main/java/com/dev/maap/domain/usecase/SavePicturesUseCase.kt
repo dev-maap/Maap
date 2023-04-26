@@ -7,9 +7,9 @@ import javax.inject.Inject
 
 class SavePicturesUseCase @Inject constructor(
     private val pictureRepository: PictureRepository
-): SuspendUseCase<List<Picture>, List<Long>>() {
+): SuspendUseCase<List<Picture>, List<Picture>>() {
 
-    override suspend fun execute(parameter: List<Picture>): List<Long> {
+    override suspend fun execute(parameter: List<Picture>): List<Picture> {
         return pictureRepository.savePictures(parameter)
     }
 }

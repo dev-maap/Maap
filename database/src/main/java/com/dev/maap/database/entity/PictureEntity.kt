@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.dev.maap.model.Group
 import com.dev.maap.model.Picture
 import com.dev.maap.model.Point
 
@@ -32,7 +33,7 @@ import com.dev.maap.model.Point
     ],
     indices = [
         Index(value = ["name"]),
-        Index(value = ["locationId"])
+        Index(value = ["locationId", "contentUri"], unique = true)
     ]
 )
 data class PictureEntity(
@@ -50,10 +51,11 @@ fun Picture.toEntity(locationId: Long) = PictureEntity(
     date = date
 )
 
-fun PictureEntity.toModel(point: Point) = Picture(
+fun PictureEntity.toModel(point: Point, groups: List<Group> = emptyList()) = Picture(
     id = id,
     name = name,
     point = point,
     contentUri = contentUri,
-    date = date
+    date = date,
+    groups = groups
 )

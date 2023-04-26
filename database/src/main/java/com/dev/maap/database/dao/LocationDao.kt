@@ -31,11 +31,12 @@ sealed interface LocationDao {
     @Transaction
     suspend fun insertLocationWithRtreeIndex(location: LocationEntity): Long {
         val id = insertLocation(location)
-        if(id != (-1).toLong()) {
+        return if(id != (-1).toLong()) {
             insertLocationRtreeIndex(id, location.point.lat, location.point.lng)
+            id
+        } else {
+            getLocationId(location.point.lat, location.point.lng)
         }
-
-        return id
     }
 
     @Transaction
@@ -51,16 +52,22 @@ sealed interface LocationDao {
     suspend fun getLocation(id: Long): LocationEntity
 
     @Query(value = """
-        SELECT * 
+        SELECT id
         FROM locations
-        WHERE id IN (
-            SELECT id 
-            FROM locations_rtree
-            WHERE minLat <= :maxLat
-            AND maxLat >= :minLat
-            AND minLng <= :maxLng
-            AND maxLng >= :minLng
-        )
+        WHERE lat = :lat
+        AND lng = :lng
+    """)
+    suspend fun getLocationId(lat: Double, lng: Double): Long
+
+    @Query(value = """
+        SELECT DISTINCT A.id, A.lat, A.lng
+        FROM locations AS A
+        JOIN locations_rtree AS B
+        ON A.id = B.id
+        WHERE B.minLat <= :maxLat
+        AND B.maxLat >= :minLat
+        AND B.minLng <= :maxLng
+        AND B.maxLng >= :minLng
     """)
     @SkipQueryVerification
     suspend fun getLocationsInRange(
@@ -68,16 +75,14 @@ sealed interface LocationDao {
     ): List<LocationEntity>
 
     @Query(value = """
-        SELECT id 
-        FROM locations
-        WHERE id IN (
-            SELECT id 
-            FROM locations_rtree
-            WHERE minLat <= :maxLat
-            AND maxLat >= :minLat
-            AND minLng <= :maxLng
-            AND maxLng >= :minLng
-        )
+        SELECT DISTINCT A.id
+        FROM locations AS A
+        JOIN locations_rtree AS B
+        ON A.id = B.id
+        WHERE B.minLat <= :maxLat
+        AND B.maxLat >= :minLat
+        AND B.minLng <= :maxLng
+        AND B.maxLng >= :minLng
     """)
     @SkipQueryVerification
     suspend fun getLocationIdsInRange(

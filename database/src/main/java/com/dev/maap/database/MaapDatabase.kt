@@ -5,19 +5,22 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.dev.maap.database.converter.GroupIconConverter
 import com.dev.maap.database.converter.UserIconConverter
+import com.dev.maap.database.dao.GroupDao
 import com.dev.maap.database.dao.LocationDao
 import com.dev.maap.database.dao.PictureDao
 import com.dev.maap.database.entity.GroupEntity
 import com.dev.maap.database.entity.LocationEntity
 import com.dev.maap.database.entity.PictureEntity
 import com.dev.maap.database.entity.UserEntity
+import com.dev.maap.database.entity.relation.PictureGroupCrossRef
 
 @Database(
     entities = [
         LocationEntity::class,
         PictureEntity::class,
         UserEntity::class,
-        GroupEntity::class
+        GroupEntity::class,
+        PictureGroupCrossRef::class
     ],
     version = 1
 )
@@ -28,4 +31,5 @@ import com.dev.maap.database.entity.UserEntity
 abstract class MaapDatabase : RoomDatabase() {
     abstract fun locationDao(): LocationDao
     abstract fun pictureDao(): PictureDao
+    abstract fun groupDao(): GroupDao
 }

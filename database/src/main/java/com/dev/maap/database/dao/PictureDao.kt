@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.dev.maap.database.dao.relation.PictureGroupRefDao
 import com.dev.maap.database.entity.LocationEntity
 import com.dev.maap.database.entity.PictureEntity
 import com.dev.maap.database.entity.toEntity
@@ -13,24 +14,39 @@ import com.dev.maap.model.Point
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface PictureDao : LocationDao {
+interface PictureDao : LocationDao, PictureGroupRefDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPictureEntity(picture: PictureEntity): Long
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertPictureEntities(pictures: List<PictureEntity>): List<Long>
-
     @Transaction
-    suspend fun insertPicture(picture: Picture): Long {
+    suspend fun insertPicture(picture: Picture): Picture {
         val locationId = insertPoint(picture.point)
-        return insertPictureEntity(picture.toEntity(locationId))
+        val pictureId = insertPictureEntity(picture.toEntity(locationId)).let { id ->
+            return@let if(id == (-1).toLong()) {
+                getPictureId(locationId, picture.contentUri)
+            } else {
+                id
+            }
+        }
+
+        return picture.copy(id = pictureId)
     }
 
     @Transaction
-    suspend fun insertPicturesWithPoint(point: Point, pictures: List<Picture>): List<Long> {
+    suspend fun insertPictures(point: Point, pictures: List<Picture>): List<Picture> {
         val locationId = insertPoint(point)
-        return insertPictureEntities(pictures.map { it.toEntity(locationId) })
+        return pictures.map { picture ->
+            val pictureId = insertPictureEntity(picture.toEntity(locationId)).let { id ->
+                return@let if(id == (-1).toLong()) {
+                    getPictureId(locationId, picture.contentUri)
+                } else {
+                    id
+                }
+            }
+
+            picture.copy(id = pictureId)
+        }
     }
 
     @Query(value = """
@@ -48,6 +64,14 @@ interface PictureDao : LocationDao {
     fun getPictureEntities(ids: List<Long>): Flow<List<PictureEntity>>
 
     @Query(value = """
+        SELECT id
+        FROM pictures
+        WHERE locationId = :locationId
+        AND contentUri = :contentUri
+    """)
+    suspend fun getPictureId(locationId: Long, contentUri: String): Long
+
+    @Query(value = """
         SELECT *
         FROM pictures
         WHERE locationId = :locationId
@@ -56,9 +80,10 @@ interface PictureDao : LocationDao {
 
     @Query(value = """
          SELECT *
-         FROM pictures
-         JOIN locations ON pictures.locationId = locations.id
-         WHERE pictures.locationId IN (:locationIds)
+         FROM pictures AS A
+         JOIN locations AS B
+         ON A.locationId = B.id
+         WHERE A.locationId IN (:locationIds)
     """)
     fun getPictureEntitiesWithLocationIds(locationIds: List<Long>): Flow<Map<LocationEntity, List<PictureEntity>>>
 }

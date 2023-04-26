@@ -35,3 +35,11 @@ fun Group.toEntity() = GroupEntity(
     favorite = favorite,
     icon = icon
 )
+
+fun GroupEntity.toModel() = Group(
+    id = id,
+    name = name,
+    description = description,
+    favorite = favorite,
+    icon = icon
+)

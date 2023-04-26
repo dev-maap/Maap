@@ -2,7 +2,6 @@ package com.dev.maap.database.dao
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.dev.maap.database.MaapDatabase
-import com.dev.maap.database.entity.toLocation
 import com.dev.maap.model.Bounds
 import com.dev.maap.model.Point
 import com.dev.maap.testing.rule.MainDispatcherRule
@@ -57,7 +56,7 @@ class LocationDaoTest {
     @Throws(Exception::class)
     fun test_insert_and_get_location() = runTest {
         val point = Point(40.7128, -74.006)
-        val id = locationDao.insertLocation(point.toLocation())
+        val id = locationDao.insertPoint(point)
         val findLocation = locationDao.getLocation(id)
 
         assertEquals(point, findLocation.point)
@@ -74,9 +73,23 @@ class LocationDaoTest {
 
         val id = locationDao.insertPoint(point)
         val findLocation = locationDao.getLocation(id)
-
         val locations = locationDao.getLocationsWithBounds(bounds)
 
         assertContains(locations, findLocation)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun test_insert_point_and_get_locationIds_with_bounds() = runTest {
+        val point = Point(40.7128, -74.006)
+        val bounds = Bounds(
+            Point(40.7, -74.1),
+            Point(40.8, -73.9)
+        )
+
+        val id = locationDao.insertPoint(point)
+        val locationIds = locationDao.getLocationIdsWithBounds(bounds)
+
+        assertContains(locationIds, id)
     }
 }

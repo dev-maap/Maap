@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 class TestPictureRepository : PictureRepository {
     private val testPictureDataSource = TestPictureDataSource()
 
-    override suspend fun savePicture(picture: Picture): Long {
+    override suspend fun savePicture(picture: Picture): Picture {
         return testPictureDataSource.savePicture(picture)
     }
 
-    override suspend fun savePictures(pictures: List<Picture>): List<Long> {
+    override suspend fun savePictures(pictures: List<Picture>): List<Picture> {
         return testPictureDataSource.savePictures(pictures)
     }
 

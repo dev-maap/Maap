@@ -25,6 +25,6 @@ class SavePicturesUseCaseTest {
     fun test_save_pictures() = runTest {
         val useCase = useCase(testPictures)
 
-        assertContains(useCase, testPicture1.id)
+        assertContains(useCase, testPicture1)
     }
 }

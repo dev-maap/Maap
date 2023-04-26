@@ -1,6 +1,7 @@
 package com.dev.maap.testing.di
 
 import com.dev.maap.database.MaapDatabase
+import com.dev.maap.database.dao.GroupDao
 import com.dev.maap.database.dao.LocationDao
 import com.dev.maap.database.dao.PictureDao
 import com.dev.maap.database.di.DaoModule
@@ -25,4 +26,9 @@ object TestDaoModule {
     fun providesPictureDao(
         database: MaapDatabase,
     ): PictureDao = database.pictureDao()
+
+    @Provides
+    fun providesGroupDao(
+        database: MaapDatabase,
+    ): GroupDao = database.groupDao()
 }

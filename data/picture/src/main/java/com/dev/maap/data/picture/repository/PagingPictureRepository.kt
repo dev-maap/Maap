@@ -11,11 +11,11 @@ class PagingPictureRepository @Inject constructor(
     private val pictureLocalDataSource: PictureLocalDataSource
 ) : PictureRepository {
 
-    override suspend fun savePicture(picture: Picture): Long {
+    override suspend fun savePicture(picture: Picture): Picture {
         return pictureLocalDataSource.savePicture(picture)
     }
 
-    override suspend fun savePictures(pictures: List<Picture>): List<Long> {
+    override suspend fun savePictures(pictures: List<Picture>): List<Picture> {
         return pictureLocalDataSource.savePictures(pictures)
     }
 
