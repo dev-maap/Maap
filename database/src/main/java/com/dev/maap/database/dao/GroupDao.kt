@@ -9,6 +9,7 @@ import com.dev.maap.database.dao.relation.PictureGroupRefDao
 import com.dev.maap.database.entity.GroupEntity
 import com.dev.maap.database.entity.toEntity
 import com.dev.maap.model.Group
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface GroupDao : PictureGroupRefDao {
@@ -34,14 +35,13 @@ interface GroupDao : PictureGroupRefDao {
         FROM groups
         WHERE id = :id
     """)
-    suspend fun getGroupEntity(id: Long): GroupEntity
+    fun getGroupEntity(id: Long): Flow<GroupEntity>
 
     @Query(value = """
         SELECT *
         FROM groups
-        WHERE id IN (:ids)
     """)
-    suspend fun getGroupEntities(ids: List<Long>): List<GroupEntity>
+    fun getGroupEntities(): Flow<List<GroupEntity>>
 
     @Query(value = """
         SELECT id
